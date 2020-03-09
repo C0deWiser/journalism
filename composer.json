@@ -1,0 +1,22 @@
+{
+    "name": "codewiser/journalism",
+    "description": "Audit any events",
+    "keywords": ["audit", "journal", "laravel", "illuminate"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Michael Pogrebnikov",
+            "email": "mpogreb@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.1.3",
+        "laravel/framework": ">=5.8",
+        "ext-json": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Codewiser\\Journalism\\": "src"
+        }
+    }
+}
