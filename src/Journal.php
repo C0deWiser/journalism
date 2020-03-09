@@ -1,4 +1,5 @@
 <?php
+
 namespace Codewiser\Journalism;
 
 use Carbon\Carbon;
@@ -15,50 +16,30 @@ use Illuminate\Support\Facades\Auth;
  * @property integer $id
  * @property Carbon $created_at
  * @property string $event
+ * @property string $email (helps identify user)
  * @property User $user
  * @property Model $object
- * @property string $payload
+ * @property mixed $payload
+ * @method ofObject(Model $model)
+ * @method event($event)
  */
 class Journal extends Model
 {
 
     protected $table = 'journal';
 
-    /**
-     * Log model event
-     * @param string $event
-     * @param Model $model
-     * @param string|null $payload
-     * @return Journal
-     */
-    public static function log(string $event, Model $model, string $payload = null): Journal
+    protected $fillable = ['event', 'payload'];
+
+    public function getPayloadAttribute($value)
     {
-        $journal = new static();
-        $journal->event = $event;
-        if ($user = Auth::user()) {
-            $journal->user()->associate($user);
-        }
-        $journal->object()->associate($model);
-        $journal->payload = $payload;
-
-        $journal->save();
-
-        return $journal;
+        return json_decode($value, true);
     }
 
-    /**
-     * Retrieve model events
-     * @param Model $model
-     * @return Builder[]|Collection
-     */
-    public static function get(Model $model)
+    public function setPayloadAttribute($value)
     {
-        return static::query()
-            ->where('object_type', get_class($model))
-            ->where('object_id', $model->getKey())
-            ->get();
+        $this->attributes['payload'] = json_encode($value);
     }
-
+    
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -67,5 +48,31 @@ class Journal extends Model
     public function object()
     {
         return $this->morphTo();
+    }
+
+    public function scopeOfObject(Builder $query, Model $model)
+    {
+        $query
+            ->where('object_type', get_class($model))
+            ->where('object_id', $model->getKey())
+            ->orderByDesc('created_at');
+        return $query;
+    }
+
+    /**
+     * @param Builder $query
+     * @param null|string|array $event
+     * @return Builder
+     */
+    public function scopeEvent(Builder $query, $event = null)
+    {
+        if ($event) {
+            if (!is_array($event)) {
+                $event = explode(' ', $event);
+            }
+            $query->whereIn('event', $event);
+        }
+        $query->orderByDesc('created_at');
+        return $query;
     }
 }

@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreatePermissionsTable extends Migration
+class CreateJournalTable extends Migration
 {
     /**
      * Run the migrations.
@@ -16,10 +16,11 @@ class CreatePermissionsTable extends Migration
             $table->increments('id')->unsigned();
             $table->timestamps();
             $table->integer('user_id')->unsigned()->index()->nullable();
+            $table->string('email')->nullable();
             $table->string('object_type');
             $table->integer('object_id')->unsigned();
             $table->string('event');
-            $table->text('payload')->nullable();
+            $table->json('payload')->nullable();
         });
     }
 
