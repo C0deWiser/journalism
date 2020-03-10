@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Auth;
  */
 trait Journalised
 {
+    private $memo;
     /**
      * @return MorphMany
      */
@@ -32,16 +33,26 @@ trait Journalised
     public function journalise($event, $payload = null)
     {
         $journal = new Journal();
-        $journal->event = $event;
-        if ($user = Auth::user()) {
-            $journal->user()->associate($user);
-            $journal->email = $user->email;
-        }
         $journal->object()->associate($this);
+        if ($user = Auth::user()) {
+            $journal->user = $user->toArray();
+        }
+        $journal->event = $event;
         $journal->payload = $payload;
-
+        $journal->memo = $this->memo;
         $journal->save();
-        
+
+        $this->memo = null;
+
         return $journal;
+    }
+
+    /**
+     * Adding textual memo to the next journal record
+     * @param string $memo
+     */
+    public function journalMemo(string $memo)
+    {
+        $this->memo = $memo;
     }
 }

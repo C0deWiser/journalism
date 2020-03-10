@@ -23,7 +23,7 @@ Add the package to your application service providers in `config/app.php` file.
 ],
 ```
 
-### Config File And Migrations
+### Migrations
 
 Publish the package migrations to your application. Run these commands inside your terminal.
 
@@ -33,4 +33,87 @@ And also run migrations.
 
     php artisan migrate
 
-> This uses the default users table which is in Laravel. You should already have the migration file for the users table available and migrated.
+## Usage
+
+Add `Journal` to you Model.
+
+```php
+class Post extends Model {
+    use Codewiser\Journalism\Journalised;
+}
+```
+
+Now you can journal any events you want.
+
+```php
+$post = Post::first();
+
+// Record an event
+$post->journalise('my-event');
+```
+
+You may add to the journal record any payload you want.
+```php
+$post->journalise('my-event', /* jsonable data */);
+```
+
+You may add textual memo to the journal record.
+```php
+$post->journalMemo('Comment');
+$post->journalise('my-event');
+```
+
+### Observer
+
+This package is very useful to record Eloquent events.
+
+Lets apply an Observer to the Model.
+
+```php
+class AppServiceProvider extends ServiceProvider 
+{
+    public function boot()
+    {
+        Post::observe(Codewiser\Journalism\Journalist::class);
+    }
+}
+```
+
+> Observer detects `created`, `updated`, `deleted`, `restored` and `forceDeleted` events.
+> You may extend the observer or write out yourself, it's simple.
+
+For now it will record some Eloquent events automatically. 
+The payload of event will contain the Model changes (`$post->getDirty()`).
+
+
+So you will have full history of object changes.
+
+Lets imagine, every time user wants to update the Post, he must explain, why changes are made.
+
+```php
+class Controller
+{
+    public function update(Request $request, $id)
+    {
+        $post = Post::find($id);
+        $post->journalMemo($request->userComment);
+        $post->fill($request->all());
+        $post->save();
+    }
+}
+```
+
+### Accessing history
+
+You have access to full history with user explanations:
+
+```php
+foreach ($post->journal as $record) {
+    echo "At {$record->created_at} 
+          user {$record->user['name']} 
+          makes {$record->event}
+          explaining it `{$record->memo}`\n";
+    
+    echo "Post changeset was: " . json_encode($record->payload);
+}
+```

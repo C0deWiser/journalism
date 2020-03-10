@@ -17,18 +17,18 @@ use Illuminate\Support\Facades\Auth;
  * @property Carbon $created_at
  * @property string $event
  * @property string $email (helps identify user)
- * @property User $user
+ * @property array $user
  * @property Model $object
  * @property mixed $payload
+ * @property string $memo
  * @method ofObject(Model $model)
  * @method event($event)
  */
 class Journal extends Model
 {
-
     protected $table = 'journal';
 
-    protected $fillable = ['event', 'payload'];
+    protected $fillable = ['event', 'payload', 'memo'];
 
     public function getPayloadAttribute($value)
     {
@@ -39,10 +39,15 @@ class Journal extends Model
     {
         $this->attributes['payload'] = json_encode($value);
     }
-    
-    public function user()
+
+    public function getUserAttribute($value)
     {
-        return $this->belongsTo(User::class);
+        return json_decode($value, true);
+    }
+
+    public function setUserAttribute($value)
+    {
+        $this->attributes['user'] = json_encode($value);
     }
 
     public function object()

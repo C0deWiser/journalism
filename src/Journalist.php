@@ -8,31 +8,32 @@ class Journalist
 {
     public function created(Model $model)
     {
-        /* @var Journalised $model */
-        return $model->journalise('created', $model->getDirty());
+        return $this->recordEloquentEvent('created', $model);
     }
 
     public function updated(Model $model)
     {
-        /* @var Journalised $model */
-        return $model->journalise('updated', $model->getDirty());
+        return $this->recordEloquentEvent('updated', $model);
     }
 
     public function deleted(Model $model)
     {
-        /* @var Journalised $model */
-        return $model->journalise('deleted', $model->getDirty());
+        return $this->recordEloquentEvent('deleted', $model);
     }
 
     public function restored(Model $model)
     {
-        /* @var Journalised $model */
-        return $model->journalise('restored', $model->getDirty());
+        return $this->recordEloquentEvent('restored', $model);
     }
 
     public function forceDeleted(Model $model)
     {
-        /* @var Journalised $model */
-        return $model->journalise('forceDeleted', $model->getDirty());
+        return $this->recordEloquentEvent('forceDeleted', $model);
+    }
+
+    private function recordEloquentEvent($event, Model $model)
+    {
+        /* @var Journalised|Model $model */
+        return $model->journalise($event, $model->getDirty());
     }
 }

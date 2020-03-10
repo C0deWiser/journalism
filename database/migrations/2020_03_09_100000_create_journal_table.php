@@ -15,12 +15,12 @@ class CreateJournalTable extends Migration
         Schema::create('journal', function (Blueprint $table) {
             $table->increments('id')->unsigned();
             $table->timestamps();
-            $table->integer('user_id')->unsigned()->index()->nullable();
-            $table->string('email')->nullable();
             $table->string('object_type');
             $table->integer('object_id')->unsigned();
             $table->string('event');
+            $table->json('user')->nullable();
             $table->json('payload')->nullable();
+            $table->text('memo')->nullable();
         });
     }
 
