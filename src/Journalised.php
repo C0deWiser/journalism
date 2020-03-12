@@ -4,6 +4,7 @@
 namespace Codewiser\Journalism;
 
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Facades\Auth;
 
@@ -15,7 +16,6 @@ use Illuminate\Support\Facades\Auth;
  */
 trait Journalised
 {
-    private $memo;
     /**
      * @return MorphMany
      */
@@ -34,25 +34,14 @@ trait Journalised
     {
         $journal = new Journal();
         $journal->object()->associate($this);
+        /** @var Model $user */
         if ($user = Auth::user()) {
             $journal->user = $user->toArray();
         }
         $journal->event = $event;
         $journal->payload = $payload;
-        $journal->memo = $this->memo;
         $journal->save();
 
-        $this->memo = null;
-
         return $journal;
-    }
-
-    /**
-     * Adding textual memo to the next journal record
-     * @param string $memo
-     */
-    public function journalMemo(string $memo)
-    {
-        $this->memo = $memo;
     }
 }

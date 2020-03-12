@@ -20,9 +20,8 @@ use Illuminate\Support\Facades\Auth;
  * @property array $user
  * @property Model $object
  * @property mixed $payload
- * @property string $memo
  * @method ofObject(Model $model)
- * @method event($event)
+ * @method ofEvent($event)
  */
 class Journal extends Model
 {
@@ -60,7 +59,7 @@ class Journal extends Model
         $query
             ->where('object_type', get_class($model))
             ->where('object_id', $model->getKey())
-            ->orderByDesc('created_at');
+            ->orderByDesc('id');
         return $query;
     }
 
@@ -69,7 +68,7 @@ class Journal extends Model
      * @param null|string|array $event
      * @return Builder
      */
-    public function scopeEvent(Builder $query, $event = null)
+    public function scopeOfEvent(Builder $query, $event = null)
     {
         if ($event) {
             if (!is_array($event)) {
@@ -77,7 +76,7 @@ class Journal extends Model
             }
             $query->whereIn('event', $event);
         }
-        $query->orderByDesc('created_at');
+        $query->orderByDesc('id');
         return $query;
     }
 }

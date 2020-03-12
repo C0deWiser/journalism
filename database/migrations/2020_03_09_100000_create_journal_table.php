@@ -20,7 +20,6 @@ class CreateJournalTable extends Migration
             $table->string('event');
             $table->json('user')->nullable();
             $table->json('payload')->nullable();
-            $table->text('memo')->nullable();
         });
     }
 

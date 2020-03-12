@@ -57,12 +57,6 @@ You may add to the journal record any payload you want.
 $post->journalise('my-event', /* jsonable data */);
 ```
 
-You may add textual memo to the journal record.
-```php
-$post->journalMemo('Comment');
-$post->journalise('my-event');
-```
-
 ### Observer
 
 This package is very useful to record Eloquent events.
@@ -88,7 +82,7 @@ The payload of event will contain the Model changes (`$post->getDirty()`).
 
 So you will have full history of object changes.
 
-Lets imagine, every time user wants to update the Post, he must explain, why changes are made.
+Lets imagine, every time user wants to update the Post, he must explain, why changes were made.
 
 ```php
 class Controller
@@ -96,9 +90,8 @@ class Controller
     public function update(Request $request, $id)
     {
         $post = Post::find($id);
-        $post->journalMemo($request->userComment);
-        $post->fill($request->all());
-        $post->save();
+        $post->journalise('comment', $request->get('comment'));
+        $post->update($request->all());
     }
 }
 ```
@@ -111,9 +104,8 @@ You have access to full history with user explanations:
 foreach ($post->journal as $record) {
     echo "At {$record->created_at} 
           user {$record->user['name']} 
-          makes {$record->event}
-          explaining it `{$record->memo}`\n";
+          makes {$record->event}\n";
     
-    echo "Post changeset was: " . json_encode($record->payload);
+    echo "Payload was: " . json_encode($record->payload);
 }
 ```
