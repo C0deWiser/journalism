@@ -10,7 +10,7 @@
         }
     ],
     "require": {
-        "laravel/framework": "^5.8 || ^6.0",
+        "laravel/framework": ">=5.8",
         "ext-json": "*"
     },
     "autoload": {
