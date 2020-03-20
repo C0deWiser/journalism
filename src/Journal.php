@@ -3,6 +3,7 @@
 namespace Codewiser\Journalism;
 
 use Carbon\Carbon;
+use Illuminate\Contracts\Support\Jsonable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -47,6 +48,28 @@ class Journal extends Model
     public function setUserAttribute($value)
     {
         $this->attributes['user'] = json_encode($value);
+    }
+
+    /**
+     * Add journal record
+     * @param string $event
+     * @param Model $model
+     * @param mixed $payload
+     * @return static
+     */
+    public static function record($event, Model $model, $payload)
+    {
+        $journal = new static();
+        $journal->object()->associate($model);
+        /** @var Model $user */
+        if ($user = Auth::user()) {
+            $journal->user = $user->toArray();
+        }
+        $journal->event = $event;
+        $journal->payload = $payload;
+        $journal->save();
+
+        return $journal;
     }
 
     public function object()

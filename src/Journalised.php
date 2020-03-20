@@ -32,16 +32,6 @@ trait Journalised
      */
     public function journalise($event, $payload = null)
     {
-        $journal = new Journal();
-        $journal->object()->associate($this);
-        /** @var Model $user */
-        if ($user = Auth::user()) {
-            $journal->user = $user->toArray();
-        }
-        $journal->event = $event;
-        $journal->payload = $payload;
-        $journal->save();
-
-        return $journal;
+        return Journal::record($event, $this, $payload);
     }
 }

@@ -1,8 +1,8 @@
 <?php
 namespace Codewiser\Journalism;
 
-use Codewiser\Journalism\Journal;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class Journalist
 {
@@ -33,7 +33,7 @@ class Journalist
 
     private function recordEloquentEvent($event, Model $model)
     {
-        /* @var Journalised|Model $model */
-        return $model->journalise($event, $model->getDirty());
+        Journal::record($event, $model, $model->getDirty());
+        return true;
     }
 }
