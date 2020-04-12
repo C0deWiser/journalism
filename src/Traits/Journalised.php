@@ -1,15 +1,14 @@
 <?php
 
 
-namespace Codewiser\Journalism;
+namespace Codewiser\Journalism\Traits;
 
+use Codewiser\Journalism\Journal;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Illuminate\Support\Facades\Auth;
 
 /**
- * Trait Journalised
+ * Access Model Journal
  * @package Codewiser\Journalism
  * 
  * @property Journal[]|Collection $journal

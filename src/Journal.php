@@ -21,14 +21,21 @@ use Illuminate\Support\Facades\Auth;
  * @property array $user
  * @property Model $object
  * @property mixed $payload
- * @method ofObject(Model $model)
- * @method ofEvent($event)
+ * @method static onlyObject(Model $model)
+ * @method static onlyEvent(string|array $event)
  */
 class Journal extends Model
 {
     protected $table = 'journal';
 
-    protected $fillable = ['event', 'payload', 'memo'];
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::addGlobalScope('latest', function (Builder $builder) {
+            $builder->latest();
+        });
+    }
 
     public function getPayloadAttribute($value)
     {
@@ -77,29 +84,22 @@ class Journal extends Model
         return $this->morphTo();
     }
 
-    public function scopeOfObject(Builder $query, Model $model)
+    public function scopeOnlyObject(Builder $query, Model $model)
     {
         $query
             ->where('object_type', get_class($model))
-            ->where('object_id', $model->getKey())
-            ->orderByDesc('id');
-        return $query;
+            ->where('object_id', $model->getKey());
     }
 
     /**
      * @param Builder $query
-     * @param null|string|array $event
-     * @return Builder
+     * @param string|array $event
      */
-    public function scopeOfEvent(Builder $query, $event = null)
+    public function scopeOnlyEvent(Builder $query, $event)
     {
-        if ($event) {
-            if (!is_array($event)) {
-                $event = explode(' ', $event);
-            }
-            $query->whereIn('event', $event);
+        if (!is_array($event)) {
+            $event = explode(' ', $event);
         }
-        $query->orderByDesc('id');
-        return $query;
+        $query->whereIn('event', $event);
     }
 }

@@ -39,7 +39,7 @@ Add `Journal` to you Model.
 
 ```php
 class Post extends Model {
-    use Codewiser\Journalism\Journalised;
+    use Codewiser\Journalism\Traits\Journalised;
 }
 ```
 
@@ -57,7 +57,7 @@ You may add to the journal record any payload you want.
 $post->journalise('my-event', /* jsonable data */);
 ```
 
-### Observer
+### Eloquent Observer
 
 This package is very useful to record Eloquent events.
 
@@ -68,19 +68,34 @@ class AppServiceProvider extends ServiceProvider
 {
     public function boot()
     {
-        Post::observe(Codewiser\Journalism\Journalist::class);
+        Post::observe(Codewiser\Journalism\Observers\Journalist::class);
     }
 }
 ```
 
 > Observer detects `created`, `updated`, `deleted`, `restored` and `forceDeleted` events.
-> You may extend the observer or write out yourself, it's simple.
 
 For now it will record some Eloquent events automatically. 
 The payload of event will contain the Model changes (`$post->getDirty()`).
 
-
 So you will have full history of object changes.
+
+### Auth Subscriber
+
+Package provides mechanism to records auth events.
+
+```php
+class EventServiceProvider extends ServiceProvider
+{
+    protected $subscribe = [
+        Codewiser\Journalism\Subscribers\Concierge::class,
+    ];
+}
+```
+
+> Subscriber detects `auth/register`, `auth/login`, `auth/logout`, `auth/reset-password` and `auth/fail` events.
+
+### Custom journal records
 
 Lets imagine, every time user wants to update the Post, he must explain, why changes were made.
 

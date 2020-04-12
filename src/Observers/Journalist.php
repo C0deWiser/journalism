@@ -1,9 +1,13 @@
 <?php
-namespace Codewiser\Journalism;
+namespace Codewiser\Journalism\Observers;
 
+use Codewiser\Journalism\Journal;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
 
+/**
+ * Observe Eloquent events
+ * @package Codewiser\Journalism\Observers
+ */
 class Journalist
 {
     public function created(Model $model)
