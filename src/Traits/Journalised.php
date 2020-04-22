@@ -21,21 +21,28 @@ trait Journalised
 {
     public static function bootJournalised()
     {
-        static::created(function (Journalised $model) {
+        static::created(function (Model $model) {
+            /* @var Journalised $model */
             $model->journalise('created', $model->getDirty());
         });
-        static::updated(function (Journalised $model) {
+        static::updated(function (Model $model) {
+            /* @var Journalised $model */
             $model->journalise('updated', $model->getDirty());
         });
-        static::deleted(function (Journalised $model) {
-            $model->journalise('deleted', $model->getDirty());
+        static::deleted(function (Model $model) {
+            /* @var Journalised $model */
+            if (method_exists($model, 'isForceDeleting') && $model->isForceDeleting()) {
+                $model->journalise('forceDeleted', $model->getDirty());
+            } else {
+                $model->journalise('deleted', $model->getDirty());
+            }
         });
-        static::restored(function (Journalised $model) {
-            $model->journalise('restored', $model->getDirty());
-        });
-        static::forceDeleted(function (Journalised $model) {
-            $model->journalise('forceDeleted', $model->getDirty());
-        });
+        if (method_exists(static::class, 'restored')) {
+            static::restored(function (Model $model) {
+                /* @var Journalised $model */
+                $model->journalise('restored', $model->getDirty());
+            });
+        }
     }
 
     /**
