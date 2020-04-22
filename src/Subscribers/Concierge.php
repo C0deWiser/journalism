@@ -6,6 +6,7 @@ namespace Codewiser\Journalism\Subscribers;
 
 use Codewiser\Journalism\Journal;
 use Illuminate\Auth\Events;
+use Illuminate\Database\Eloquent\Model;
 
 /**
  * Watch Auth events
@@ -74,7 +75,7 @@ class Concierge
      */
     public function onUserLockedOut($event)
     {
-//        $this->recordAuthEvent('auth/lockout', $event->user, null);
+        $this->recordAuthEvent('auth/lockout', null, null);
     }
 
     /**
@@ -90,7 +91,7 @@ class Concierge
      */
     public function onUserAuthenticates($event)
     {
-//        $this->recordAuthEvent('auth/authentication', $event->user, null);
+        $this->recordAuthEvent('auth/authentication', $event->user, null);
     }
 
     /**
@@ -98,7 +99,7 @@ class Concierge
      */
     public function onUserAttempts($event)
     {
-        //$this->recordAuthEvent('auth/attempt', $event->user, $event->credentials);
+        $this->recordAuthEvent('auth/attempt', null, $event->credentials);
     }
 
     /**
@@ -124,9 +125,10 @@ class Concierge
         $this->recordAuthEvent('auth/login', $event->user, ['remember' => $event->remember]);
     }
 
-    private function recordAuthEvent($event, $user, $payload)
+    private function recordAuthEvent($event, $user = null, $payload = null)
     {
-        Journal::record($event, $user, $payload);
+        if ($user instanceof Model)
+            Journal::record($event, $user, $payload);
         return true;
     }
 }
