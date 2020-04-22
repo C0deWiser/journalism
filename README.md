@@ -33,7 +33,7 @@ And also run migrations.
 
     php artisan migrate
 
-## Usage
+## Using as Trait
 
 Add `Journal` to you Model.
 
@@ -43,7 +43,9 @@ class Post extends Model {
 }
 ```
 
-Now you can journal any events you want.
+For now every Eloquent event will be journalized.
+
+And you can journal any events you want.
 
 ```php
 $post = Post::first();
@@ -57,11 +59,7 @@ You may add to the journal record any payload you want.
 $post->journalise('my-event', /* jsonable data */);
 ```
 
-### Eloquent Observer
-
-This package is very useful to record Eloquent events.
-
-Lets apply an Observer to the Model.
+### Or using as Observer
 
 ```php
 class AppServiceProvider extends ServiceProvider 
@@ -72,13 +70,6 @@ class AppServiceProvider extends ServiceProvider
     }
 }
 ```
-
-> Observer detects `created`, `updated`, `deleted`, `restored` and `forceDeleted` events.
-
-For now it will record some Eloquent events automatically. 
-The payload of event will contain the Model changes (`$post->getDirty()`).
-
-So you will have full history of object changes.
 
 ### Auth Subscriber
 
