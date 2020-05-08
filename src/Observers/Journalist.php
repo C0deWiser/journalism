@@ -12,17 +12,21 @@ class Journalist
 {
     public function created(Model $model)
     {
-        return $this->recordEloquentEvent('created', $model);
+        return $this->recordEloquentEvent('created', $model, $model->toArray());
     }
 
     public function updated(Model $model)
     {
-        return $this->recordEloquentEvent('updated', $model);
+        return $this->recordEloquentEvent('updated', $model, $model->getDirty());
     }
 
     public function deleted(Model $model)
     {
-        return $this->recordEloquentEvent('deleted', $model);
+        if (method_exists($model, 'isForceDeleting') && $model->isForceDeleting()) {
+            return $this->recordEloquentEvent('forceDeleted', $model);
+        } else {
+            return $this->recordEloquentEvent('deleted', $model);
+        }
     }
 
     public function restored(Model $model)
@@ -30,14 +34,9 @@ class Journalist
         return $this->recordEloquentEvent('restored', $model);
     }
 
-    public function forceDeleted(Model $model)
+    private function recordEloquentEvent($event, Model $model, $payload = null)
     {
-        return $this->recordEloquentEvent('forceDeleted', $model);
-    }
-
-    private function recordEloquentEvent($event, Model $model)
-    {
-        Journal::record($event, $model, $model->getDirty());
+        Journal::record($event, $model, $payload);
         return true;
     }
 }

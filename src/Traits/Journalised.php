@@ -4,6 +4,7 @@
 namespace Codewiser\Journalism\Traits;
 
 use Codewiser\Journalism\Journal;
+use Codewiser\Journalism\Observers\Journalist;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -22,25 +23,17 @@ trait Journalised
     public static function bootJournalised()
     {
         static::created(function (Model $model) {
-            /* @var Journalised $model */
-            $model->journalise('created', $model->getDirty());
+            (new Journalist())->created($model);
         });
         static::updated(function (Model $model) {
-            /* @var Journalised $model */
-            $model->journalise('updated', $model->getDirty());
+            (new Journalist())->updated($model);
         });
         static::deleted(function (Model $model) {
-            /* @var Journalised $model */
-            if (method_exists($model, 'isForceDeleting') && $model->isForceDeleting()) {
-                $model->journalise('forceDeleted', $model->getDirty());
-            } else {
-                $model->journalise('deleted', $model->getDirty());
-            }
+            (new Journalist())->deleted($model);
         });
         if (method_exists(static::class, 'restored')) {
             static::restored(function (Model $model) {
-                /* @var Journalised $model */
-                $model->journalise('restored', $model->getDirty());
+                (new Journalist())->restored($model);
             });
         }
     }
