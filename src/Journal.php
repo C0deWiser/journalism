@@ -62,21 +62,27 @@ class Journal extends Model
      * @param string $event
      * @param Model $model
      * @param mixed $payload
-     * @return static
+     * @return static|null
      */
     public static function record($event, Model $model, $payload)
     {
-        $journal = new static();
-        $journal->object()->associate($model);
-        /** @var Model $user */
-        if ($user = Auth::user()) {
-            $journal->user = $user->toArray();
-        }
-        $journal->event = $event;
-        $journal->payload = $payload;
-        $journal->save();
+        // Pivots may has ho primary key
 
-        return $journal;
+        if ($model->getKey()) {
+            $journal = new static();
+            $journal->object()->associate($model);
+            /** @var Model $user */
+            if ($user = Auth::user()) {
+                $journal->user = $user->toArray();
+            }
+            $journal->event = $event;
+            $journal->payload = $payload;
+            $journal->save();
+
+            return $journal;
+        } else {
+            return null;
+        }
     }
 
     public function object()

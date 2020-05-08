@@ -57,7 +57,7 @@ trait Journalised
      * Insert journal record
      * @param string $event
      * @param mixed $payload
-     * @return Journal
+     * @return Journal|null
      */
     public function journalise($event, $payload = null)
     {
