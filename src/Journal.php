@@ -2,12 +2,9 @@
 
 namespace Codewiser\Journalism;
 
-use Carbon\Carbon;
-use Illuminate\Contracts\Support\Jsonable;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Foundation\Auth\User;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -17,12 +14,11 @@ use Illuminate\Support\Facades\Auth;
  * @property integer $id
  * @property Carbon $created_at
  * @property string $event
- * @property string $email (helps identify user)
  * @property array $user
  * @property Model $object
- * @property mixed $payload
- * @method static onlyObject(Model $model)
- * @method static onlyEvent(string|array $event)
+ * @property null|string|array $payload
+ * @method static static|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder onlyObject(Model $model)
+ * @method static static|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder onlyEvent(string|array $event)
  */
 class Journal extends Model
 {

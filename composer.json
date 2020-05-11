@@ -1,6 +1,6 @@
 {
     "name": "codewiser/journalism",
-    "version": "1.2.4",
+    "version": "1.2.5",
     "description": "Audit any events",
     "keywords": ["audit", "journal", "laravel", "illuminate"],
     "license": "MIT",
